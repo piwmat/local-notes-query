@@ -12,7 +12,7 @@
       "numpy"
     ],
     "description": "Lokalny RAG pipeline dla vaultu best you/. ONNX embeddings (bge-micro-v2) + Smart Connections MCP keyword + MMR dedup + LLM synteza (OpenAI-compatible). Wyodrebnione stage-y: extract (build-embeddings), index (update_tree.py), query (REPL). Eksperymentalny backend Cognee (kb-cognee).",
-    "analyzedAt": "2026-07-31T16:35:42.084620+00:00",
+    "analyzedAt": "2026-07-31T17:14:22.965712+00:00",
     "gitCommitHash": ""
   },
   "nodes": [

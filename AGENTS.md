@@ -1,23 +1,32 @@
-# Agent Standard: Querying Knowledge Base
+﻿# Agent Standard: Querying Knowledge Base
 
 ## Architecture
-`./programs/query` — standalone Python script. Local ONNX embeddings, keyword MCP, MMR-based selection, LLM synthesis.
+`./programs/best-you-kb.py` — single-file Python RAG. 0 external deps beyond numpy/onnxruntime/tokenizers. **Independent of Smart Connections.**
 
 ## Pipeline
-1. **Deterministic retrieval** (0 tokens): question → local ONNX (bge-micro-v2) cosine vs `embeddings.json` (top 10) + keyword MCP search (top 8) → merged candidate list
-2. **Deterministic MMR selection** (0 tokens): greedy Maximal Marginal Relevance over candidate embedding vectors — `λ·score − (1−λ)·max_sim(picked)`, λ=0.75, plus near-duplicate gate `DUP_THRESH=0.92` and **6k token hard cap** (no LLM; `tree-index.md` used only for ancestor-chain headers)
-3. **Read notes** (0 tokens): script reads selected files from filesystem
-4. **LLM synthesis** (tokens): question + layer-2 SCOPE header (budget used/left, branches) + selected note content (ancestor chains inline) + candidate list → answer with citations
+1. **Boot** (~1-2s one-off): load `*.md` from `best you/`, embed title+branch via local ONNX (bge-micro-v2, 384-dim). No `embeddings.json` cache — vectors live in process memory.
+2. **Vector retrieval** (0 LLM tokens): ONNX embed question → cosine top-10 vs in-memory note vecs.
+3. **Keyword retrieval** (0 LLM tokens): in-process TF-IDF (BM25-ish, ~30 lines of numpy) → top-8. Replaces Smart Connections MCP.
+4. **Hybrid candidates**: union of (vector, keyword) with vector score × 1.0, keyword × 0.7.
+5. **MMR selection** (0 LLM tokens): `λ·score − (1−λ)·max_sim(picked)`, λ=0.75, dupe gate `DUP_THRESH=0.92`, **6k token hard cap**.
+6. **LLM synthesis** (tokens): question + selected note content + ancestor chain → answer with citations.
 
 ## Files
-- `./programs/query` — main query script
-- `./programs/build-embeddings` — refresh embeddings from Smart Connections `.ajson` files
-- `./programs/tree-index.md` — auto-generated knowledge tree (data, lives with programs)
-- `embeddings.json` — pre-computed 384-dim vectors for all `best you/` notes (data, stays in vault root)
+- `./programs/best-you-kb.py` — single-file REPL (query, retrieve, synthesize).
+- `./programs/update_tree.py` — regenerate `tree-index.md` from wikilinks.
+- `./programs/tree-index.md` — auto-generated knowledge tree.
+- `./.ua/knowledge-graph.json` — UA dashboard graph.
+- `./AGENTS.md` — this file.
+- `./embeddings.json` — **deprecated** (kept for back-compat; best-you-kb.py does not use it).
+
+## Config (env)
+- `LLM_BASE` (default `http://localhost:20128/v1`)
+- `LLM_API_KEY` (optional)
+- `LLM_MODEL` (default `oc/ling-3.0-flash-free`)
 
 ## Principles
-- **Embeddings NEVER enter LLM context** — only paths and content.
-- **Deterministic top-K** — reproducible, no randomness; MMR selection is bounded by the candidate list.
-- **MMR decides what to read** — diversity via embedding similarity (λ=0.75, dupe gate 0.92), capped by 6k token budget; script does the file I/O.
-- **Reference-based** — cite note filename per point.
-- **Terse, engineering-focused, bulleted. No fluff.
+- **Embeddingi generowane in-process** — notatki raz przy bocie, pytania per-query. SC nie jest wymagany.
+- **Deterministic top-K** — zero randomness; MMR bounded by candidate list.
+- **Hybrid retrieval** — vector + TF-IDF, hybrid recall > either alone.
+- **Reference-based** — cite filename per point.
+- **Terse, engineering-focused, bulleted. No fluff.**
