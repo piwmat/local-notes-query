@@ -1,0 +1,9 @@
+**Metoda małych kroków** to w omawianych systemach fundament trwałej zmiany, oparty na przekonaniu, że „dobra zmiana potrzebuje systemu i czasu”, a nie drastycznych, jednorazowych zrywów.
+
+Oto rozwinięcie jej kluczowych elementów:
+
+- **Kwadrans Rozwoju:** To jedno z najważniejszych postanowień, polegające na codziennym przeznaczaniu **przynajmniej 10–15 minut** na własny rozwój wg konkretnego planu. Celem jest przyswajanie wiedzy, tworzenie własnych treści lub szukanie inspiracji (np. biografie, filmy). Czas ten można wykorzystywać dowolnie, ważne by czynność stała się codzienną normą.
+- **Zasada „Drobnych Postanowień”:** Aby uniknąć oporu mózgu przed zmianą, nowe zadania powinny być **maksymalnie proste**. Idealne drobne postanowienie powinno zajmować **do 3 minut** wykonania (np. 5 pompek, szklanka wody, 2 minuty pozycji siły).
+- **Sztuka zaczynania:** Samodyscyplina jest definiowana jako **umiejętność rozpoczęcia czynności**. Metoda uczy, by stać się „mistrzem zaczynania” – świadomość, że po wykonaniu minimalnego kroku można się „bezkarnie wycofać”, paradoksalnie ułatwia kontynuowanie pracy i buduje większe zaangażowanie niż zmuszanie się do długich sesji.
+- **Budowanie poczucia skuteczności:** Każdy mały, odhaczony sukces (nawet zrobienie 1 pompki) wzmacnia **poczucie skuteczności** i wiarę we własne siły. Chroni to przed „błędem amatora”, czyli podejmowaniem zbyt ambitnych wyzwań „na raz”, co zazwyczaj prowadzi do szybkiego zniechęcenia.
+- **Filozofia Kaizen:** System promuje metodę „zacznij skromnie i codziennie zwiększaj trudność” (np. o jedną pompkę więcej każdego dnia). Pozwala to na miarowy rozwój dostosowany do ludzkiej psychiki, budując trwałe „aktywa” w postaci nawyków.

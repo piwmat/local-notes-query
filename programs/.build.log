@@ -1,0 +1,3 @@
+principal_configuration table already exists, skipping creation
+session_records table already exists, skipping creation
+session_model_usage table already exists, skipping creation

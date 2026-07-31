@@ -1,0 +1,116 @@
+"""kb-cognee: index Obsidian notes into cognee for semantic search.
+
+Usage:
+  kb-cognee add [PATH ...]    add .md files (default: all notes in vault)
+  kb-cognee build             cognify the dataset (run once after add)
+  kb-cognee search QUERY      search the dataset (top 5)
+  kb-cognee reset             wipe local cognee data/system/cache dirs
+"""
+import os, sys, shutil, time, asyncio, argparse
+from pathlib import Path
+
+BASE = Path(__file__).resolve().parent.parent
+DATA = BASE / "programs" / ".cognee_data"
+SYS  = BASE / "programs" / ".cognee_system"
+CACHE = BASE / "programs" / ".cognee_cache"
+DATASET = "best_you"
+SKIP_NAMES = {"AGENTS.md", "instructions.md"}
+SKIP_PREFIXES = ("excalibrain",)
+
+def _setup_env():
+    m = os.environ.get("LLM_MODEL", "oc/deepseek-v4-flash-free")
+    provider, _, _ = m.partition("/")
+    if provider not in {"openai", "fastembed"}:
+        m = f"openai/{m}"
+    os.environ.update({
+        "LLM_PROVIDER": "openai",
+        "LLM_ENDPOINT": os.environ.get("LLM_BASE", "http://localhost:20128/v1"),
+        "LLM_API_KEY": os.environ.get("LLM_API_KEY", "x"),
+        "LLM_MODEL": m,
+        "LLM_INSTRUCTOR_MODE": "json_mode",  # DeepSeek thinking rejects tool_choice
+        "EMBEDDING_PROVIDER": "fastembed",
+        "EMBEDDING_MODEL": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+        "EMBEDDING_DIMENSIONS": "384",
+        "ENABLE_BACKEND_ACCESS_CONTROL": "false",
+        "COGNEE_SKIP_CONNECTION_TEST": "true",
+        "CACHING": "false",
+        "DATA_ROOT_DIRECTORY": str(DATA),
+        "SYSTEM_ROOT_DIRECTORY": str(SYS),
+        "CACHE_ROOT_DIRECTORY": str(CACHE),
+    })
+
+
+def _resolve(paths):
+    out = []
+    for p in paths:
+        pp = Path(p)
+        if not pp.is_absolute():
+            pp = BASE / p
+        if pp.is_file() and pp.suffix == ".md":
+            out.append(str(pp))
+    return out
+
+def default_notes():
+    return [
+        str(f) for f in sorted(BASE.glob("*.md"))
+        if f.name not in SKIP_NAMES and not f.name.lower().startswith(SKIP_PREFIXES)
+    ]
+
+async def cmd_add(paths):
+    import cognee
+    paths = _resolve(paths) if paths else default_notes()
+    if not paths:
+        print("no notes to add"); return 1
+    t = time.monotonic()
+    await cognee.add(paths, dataset_name=DATASET)
+    print(f"submitted {len(paths)} notes ({time.monotonic()-t:.1f}s)")
+    return 0
+
+async def cmd_build():
+    import cognee
+    t = time.monotonic()
+    await cognee.cognify(datasets=DATASET)
+    print(f"cognified ({time.monotonic()-t:.1f}s)")
+    return 0
+
+async def cmd_search(query, limit):
+    import cognee
+    res = await cognee.search(query, datasets=DATASET)
+    if not res:
+        print("(no results)"); return 0
+    for r in res[:limit]:
+        print("-", str(r))
+    more = len(res) - min(limit, len(res))
+    suffix = f" -- {more} more" if more else ""
+    print(f"({len(res)} results{suffix})")
+    return 0
+
+def cmd_reset():
+    for d in (DATA, SYS, CACHE):
+        if d.is_dir():
+            shutil.rmtree(d)
+            print(f"removed {d.name}")
+    print("cognee data wiped")
+    return 0
+
+def build_parser():
+    p = argparse.ArgumentParser(prog="kb-cognee", description=__doc__,
+                                formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = p.add_subparsers(dest="cmd", required=True)
+    sub.add_parser("add", help="add notes to cognee").add_argument("paths", nargs="*")
+    sub.add_parser("build", help="cognify (build the graph)")
+    s = sub.add_parser("search", help="search the dataset")
+    s.add_argument("query", nargs="+")
+    s.add_argument("--limit", type=int, default=5, help="show top N results (default 5)")
+    sub.add_parser("reset", help="wipe local cognee state")
+    return p
+
+async def main(args):
+    if args.cmd == "add":   return await cmd_add(args.paths)
+    if args.cmd == "build": return await cmd_build()
+    if args.cmd == "search":return await cmd_search(" ".join(args.query), args.limit)
+    if args.cmd == "reset": return cmd_reset()
+
+if __name__ == "__main__":
+    _setup_env()
+    raise SystemExit(asyncio.run(main(build_parser().parse_args())))

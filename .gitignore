@@ -1,0 +1,9 @@
+﻿__pycache__/
+*.pyc
+.ua/dashboard.out.log
+.ua/dashboard.err.log
+.ua/viewer.log
+.understand-anything/
+programs/__pycache__/
+programs/.cognee_data/
+programs/.cognee_system/
