@@ -6,7 +6,7 @@ import numpy as np
 from tokenizers import Tokenizer
 import onnxruntime as ort
 
-VAULT = Path(r"C:\Users\Mateusz\Desktop\Notes\best you")
+VAULT = Path(r"C:\Users\Mateusz\Desktop\Notes\best you\notes")
 SNAP = Path.home() / ".cache" / "hermes-embedder" / "models--TaylorAI--bge-micro-v2" / "snapshots"
 SNAP_DIR = SNAP / [d for d in os.listdir(SNAP) if os.path.isdir(SNAP / d)][0]
 TOKEN_BUDGET = 6000
@@ -48,10 +48,31 @@ for p in sorted(VAULT.glob("*.md")):
     NOTES.append({"path": p.name, "title": _title(txt), "branch": _branch(txt)})
     NOTE_TXT[p.name] = txt
 NOTE_VECS = embed([re.sub(r"\s+", " ", n["title"] + " " + n["branch"]) for n in NOTES]).astype(np.float32)
+# --- wikilink graph (NEIGHBORS) ---
+WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|[^\]]+)?\]\]")
+TITLE_TO_PATH = {n["title"].strip().lower(): n["path"] for n in NOTES}
+def _resolve_link(t):
+    k = t.strip().lower()
+    if k in TITLE_TO_PATH: return TITLE_TO_PATH[k]
+    if (k + ".md") in NOTE_TXT: return k + ".md"
+    return None
+NEIGHBORS = {n["path"]: set() for n in NOTES}
+for n in NOTES:
+    for m in WIKILINK_RE.finditer(NOTE_TXT[n["path"]]):
+        dst = _resolve_link(m.group(1))
+        if dst and dst != n["path"]:
+            NEIGHBORS[n["path"]].add(dst)
+            NEIGHBORS[dst].add(n["path"])  # bidirectional
+
 
 # â”€â”€ TF-IDF keyword (30 lines) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-TOK_RE = re.compile(r"[a-zA-ZÄ…Ä‡Ä™Ĺ‚Ĺ„ĂłĹ›ĹşĹĽÄ„Ä†ÄĹĹĂ“ĹšĹąĹ»]{3,}")
-STOP = {"oraz","jak","czy","przy","ale","tym","teĹĽ","wiÄ™c","jest","sÄ…","byÄ‡","moĹĽna","bardzo","wtedy","teraz","jeszcze","tylko","jesli","jeĹ›li","gdy","dla","jego","jej","ich","ten","ta","to","ten"}
+TOK_RE = re.compile(r"[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]{3,}", re.UNICODE)
+STOP = {"i","a","w","z","o","u","na","do","od","po","ze","we","za","przed",
+        "nie","gdy","już","dla","jak","czy","przy","ale","tym","też","więc",
+        "jest","są","być","można","bardzo","wtedy","teraz","jeszcze","tylko",
+        "jeśli","jego","jej","ich","ten","ta","to","te","tego","tych",
+        "oraz","aby","bo","że","co","gdyż","jeżeli","taki","taka","tako",
+        "się"}
 DOC_TERMS = []; DF = {}
 for n in NOTES:
     toks = [t.lower() for t in TOK_RE.findall(n["title"] + " " + n["branch"]) if t.lower() not in STOP]
@@ -104,11 +125,30 @@ def mmr(cands, token_budget=TOKEN_BUDGET, lam=LAM):
 def NoteTxt(p):
     return NOTE_TXT.get(p, NOTE_TXT.get([k for k in NOTE_TXT if Path(k).name == p][0], ""))
 
+# --- RRF + graph expansion ---
+RRF_K = 60
+GRAPH_DECAY = 0.5
+SEED_VEC = 5
+SEED_KW = 3
+
+def rrf(vec_ranked, kw_ranked, k=RRF_K):
+    scores = {}
+    for r, p in enumerate(vec_ranked, 1):
+        scores[p] = scores.get(p, 0.0) + 1.0 / (k + r)
+    for r, p in enumerate(kw_ranked, 1):
+        scores[p] = scores.get(p, 0.0) + 1.0 / (k + r)
+    return scores
+
 def candidates(q):
-    seen = {}; 
-    for p, s in vec_search(q): seen[p] = max(seen.get(p, -1), s)
-    for p, s in kw_search(q): seen[p] = max(seen.get(p, -1), s * 0.7)
-    return [(p, v) for p, v in sorted(seen.items(), key=lambda x: -x[1])]
+    vec = vec_search(q)                    # top-10 (path, sim)
+    kw = kw_search(q)                      # top-8  (path, bm25)
+    seeds = rrf([p for p,_ in vec[:SEED_VEC]], [p for p,_ in kw[:SEED_KW]])
+    pool = dict(seeds)                     # seeds keep their RRF score
+    for seed, s in seeds.items():
+        for nb in NEIGHBORS.get(seed, ()):
+            nb_score = s * GRAPH_DECAY
+            pool[nb] = max(pool.get(nb, 0.0), nb_score)
+    return [(p, v) for p, v in sorted(pool.items(), key=lambda x: -x[1])]
 
 def context_for(q):
     cands = candidates(q)
@@ -150,11 +190,19 @@ def ask(q):
 
 # â”€â”€ REPL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 if __name__ == "__main__":
-    print(f"loaded {len(NOTES)} notes; vocab={len(IDF)}", flush=True)
+    print(f"loaded {len(NOTES)} notes from '{VAULT.name}'; vocab={len(IDF)}", flush=True)
     while True:
-        try: q = input("\nbest-you-kb> ").strip()
+        try: q = input("\nlocal-kb> ").strip()
         except EOFError: break
         if not q: continue
+        if q.startswith("/model"):
+            parts = q.split(" ", 1)
+            if len(parts) > 1 and parts[1].strip():
+                LLM_MODEL = parts[1].strip()
+                print(f"model set to: {LLM_MODEL}")
+            else:
+                print(f"current model: {LLM_MODEL}")
+            continue
         if q == "/q": break
         if q == "/list": print("\n".join(f"- {n['path']}: {n['title']}" for n in NOTES)); continue
         t = time.monotonic(); ctx, cited = context_for(q); print(f"[{time.monotonic()-t:.2f}s, {len(cited)} files]")

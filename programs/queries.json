@@ -1,0 +1,94 @@
+﻿[
+  {
+    "question": "Jak siła woli się wyczerpuje i jak ją odnawiać?",
+    "expected_notes": [
+      "Siła woli jako ograniczony zasób (bak z paliwem).md",
+      "Zarządzanie Siłą Woli.md",
+      "Energetyzacja i Biologia Dyscypliny.md"
+    ]
+  },
+  {
+    "question": "Jak zamienić nawyk w automatyzm, żeby nie zużywać siły woli?",
+    "expected_notes": [
+      "Automatyzacja i Formowanie Nawyków.md",
+      "Automatyzacja i Nawyki.md",
+      "Fazy automatyzacji - Od wysiłku do krystalizacji.md"
+    ]
+  },
+  {
+    "question": "Co robić gdy pokusa jest silniejsza od motywacji?",
+    "expected_notes": [
+      "Odpieranie Pokus i Praca ze Środowiskiem.md",
+      "Strategia Czempionów (Eliminacja zamiast walki).md",
+      "Metody 'Tu i Teraz' (Doraźne wsparcie).md"
+    ]
+  },
+  {
+    "question": "Jak zacząć budować dyscyplinę od zera?",
+    "expected_notes": [
+      "Fundamenty i Mentalna Przygotowanie.md",
+      "Fundamenty i Tożsamość.md",
+      "Metoda Małych Kroków.md",
+      "Kluczowe Postanowienia Startowe.md"
+    ]
+  },
+  {
+    "question": "Jakie ćwiczenia trenują silę woli jak mięsień?",
+    "expected_notes": [
+      "Trening siły woli.md",
+      "Ćwiczenia samoregulacji.md"
+    ]
+  },
+  {
+    "question": "Co zagraża nawykom i jak zapobiegać regresowi?",
+    "expected_notes": [
+      "Zagrożenia dla portfela nawyków.md",
+      "Monitorowanie i Korekta.md"
+    ]
+  },
+  {
+    "question": "Jak planowanie oszczędza energię i siłę woli?",
+    "expected_notes": [
+      "Planowanie jako oszczędność energii.md",
+      "Redukcja kosztu wyboru.md",
+      "Zarządzanie Siłą Woli.md"
+    ]
+  },
+  {
+    "question": "Jak działa metoda małych kroków i dlaczego obniżanie poprzeczki pomaga?",
+    "expected_notes": [
+      "Metoda Małych Kroków.md",
+      "Budowanie Poczucia Skuteczności.md"
+    ]
+  },
+  {
+    "question": "Jak tożsamość wpływa na długoterminową dyscyplinę?",
+    "expected_notes": [
+      "Fundamenty i Tożsamość.md",
+      "Długofalowe korzyści i wpływ na tożsamość.md",
+      "Prawdziwa Decyzja i Głęboka Motywacja.md"
+    ]
+  },
+  {
+    "question": "Czym różni się strategia doraźna od długoterminowej inwestycji w nawyki?",
+    "expected_notes": [
+      "Metody 'Tu i Teraz' (Doraźne wsparcie).md",
+      "Metody Długoterminowe (Inwestycja w Aktywa).md",
+      "Mechanizm tworzenia i automatyzacji (Proces inwestycyjny).md"
+    ]
+  },
+  {
+    "question": "Jak oddychanie HRV i kognitywna nakładka pomagają w samokontroli?",
+    "expected_notes": [
+      "Techniki wspierające.md",
+      "Techniki wspierające zwrot z inwestycji.md"
+    ]
+  },
+  {
+    "question": "Jak wygląda plan na ostatnie miesiące programu?",
+    "expected_notes": [
+      "Etap IV i V - Krystalizacja i Finisz.md",
+      "Postanowienia wedle etapów.md"
+    ]
+  }
+]
