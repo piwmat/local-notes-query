@@ -24,6 +24,24 @@
 
 ---
 
+## 2026-08-01 — Cognee-lite: graf konceptów zbudowany i zintegrowany — Recall 0.438→0.500
+
+**Co zrobiono:**
+- `tools/build_concept_graph.py` (nowy): per-note LLM batch (plain chat completion, `stream:false`), ekstrakcja triples (podmiot, czasownik, dopełnienie) → `output/concept-graph.json`. 36 notatek, 416 triples, 1 empty (excalibrain 1.md — Excalidraw bez tekstu), 66s.
+- `local-kb.py`: ładowanie grafu → `CONCEPT_NEIGHBORS` (notatki dzielące ≥1 koncept s/o) → ekspansja w `candidates()` z `GRAPH_DECAY`.
+- Eval (bramka danych): **Recall@10 0.438→0.500, MRR 0.521→0.517**. PASS → graf zostaje.
+
+**Wzorce:**
+- Trafione cele fleksji: Q6 (zagraża→Zagrożenia) 0→1, Q10 (doraźna→Doraźne) 0→2, Q4 0→2.
+- Dilucja: Q1/Q2/Q5 straciły po 1-2 hitach (koncept-edge'y wypychają bezpośrednie). Kandydat do tuningu: niższy decay dla krawędzi konceptowych.
+
+**Błędy napotkane:**
+- 9Router domyślnie zwraca SSE stream (`text/event-stream`) gdy brak `"stream": false` w body → `json.loads` fail. Fix: `"stream": False`. (lekcja: curl z jawnym `stream:false` maskował problem)
+
+**Status:** ✅ Zakończone. Graf działa, recall poprawiony.
+
+---
+
 ## 2026-08-01 — A/B test: cognee vs własny pipeline — WYNIK: cognee odrzucone
 
 **Co zrobiono:**

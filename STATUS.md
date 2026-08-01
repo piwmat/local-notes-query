@@ -21,12 +21,12 @@
 ## Co jest następne (kolejka)
 
 1. **Push do GitHub** (repo `piwmat/local-notes-query`) — zrobione.
-2. **Ewaluacja retrievalu** — naprawiona (retrieve cmd + fix benchmarku cudzysłowów). Baseline: Recall@10=0.438, MRR=0.521. Następny cel: >0.6 (graf konceptów).
+2. **Ewaluacja retrievalu** — działa. Baseline: Recall@10=0.438, MRR=0.521 → po grafie konceptów: **Recall@10=0.500, MRR=0.517**. Następny cel: >0.6 (tuning decay krawędzi konceptowych).
 3. **`sync.bat` pełny przebieg** — przetestowany po naprawie `for /f`. Indeksowanie działa.
 
 ## Decyzje
 
-- **Graf konceptów (rzeczowniki + krawędzie-czasowniki): BUDUJEMY (Cognee-lite), trigger spełniony.** Recall@10=0.438 <0.6. Sposób: własna ekstrakcja triples (1× LLM batch, plain chat completion) → `output/concept-graph.json` → krawędzie do NEIGHBORS. Bez instructor/graph DB.
+- **Graf konceptów (Cognee-lite): ZBUDOWANY.** `tools/build_concept_graph.py` → `output/concept-graph.json` (416 triples) → `CONCEPT_NEIGHBORS` w local-kb.py. Recall@10 0.438→0.500. Do tuningu: decay krawędzi konceptowych (dilucja Q1/Q2/Q5).
 - **Cognee (biblioteka): ODRZUCONE po A/B** (6 blokerów integracji z 9Router, m.in. JSON schema `discriminator` → 400). Szczegóły w logbook.md.
 
 ## Otwarte pytania

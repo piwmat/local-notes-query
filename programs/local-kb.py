@@ -64,6 +64,27 @@ for n in NOTES:
             NEIGHBORS[n["path"]].add(dst)
             NEIGHBORS[dst].add(n["path"])  # bidirectional
 
+# --- concept graph (Cognee-lite, output/concept-graph.json) ---
+# triples [s,v,o] per note; edges = notes sharing >=1 concept (s or o)
+CONCEPT_GRAPH_FILE = VAULT.parent / "output" / "concept-graph.json"
+CONCEPT_NEIGHBORS = {n["path"]: set() for n in NOTES}
+if CONCEPT_GRAPH_FILE.exists():
+    _cg = json.loads(CONCEPT_GRAPH_FILE.read_text(encoding="utf-8"))
+    _conc = {}
+    for _note, _triples in _cg.items():
+        for _s, _v, _o in _triples:
+            for _c in (_s, _o):
+                _k = _c.strip().lower()
+                if _k:
+                    _conc.setdefault(_k, set()).add(_note)
+    for _note in NOTES:
+        _p = _note["path"]
+        for _s, _v, _o in _cg.get(_p, []):
+            for _c in (_s, _o):
+                CONCEPT_NEIGHBORS[_p] |= _conc.get(_c.strip().lower(), set())
+    for _p in CONCEPT_NEIGHBORS:
+        CONCEPT_NEIGHBORS[_p].discard(_p)
+
 
 # â”€â”€ TF-IDF keyword (30 lines) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 TOK_RE = re.compile(r"[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]{3,}", re.UNICODE)
@@ -146,6 +167,9 @@ def candidates(q):
     pool = dict(seeds)                     # seeds keep their RRF score
     for seed, s in seeds.items():
         for nb in NEIGHBORS.get(seed, ()):
+            nb_score = s * GRAPH_DECAY
+            pool[nb] = max(pool.get(nb, 0.0), nb_score)
+        for nb in CONCEPT_NEIGHBORS.get(seed, ()):
             nb_score = s * GRAPH_DECAY
             pool[nb] = max(pool.get(nb, 0.0), nb_score)
     return [(p, v) for p, v in sorted(pool.items(), key=lambda x: -x[1])]
