@@ -24,6 +24,19 @@
 
 ---
 
+## 2026-08-01 — Tuning CONCEPT_DECAY: optimum 0.5, eksperyment zamknięty
+
+**Co zrobiono:** A/B/C decay krawędzi konceptowych w `candidates()`.
+- 0.3 → Recall 0.469 (dilucja odwrócona — za słaba ekspansja)
+- **0.5 → 0.500 (optymalne, zgodne z GRAPH_DECAY)** ← zostaje
+- 0.7 → Recall 0.406, MRR 0.495 (za silna ekspansja wypycha seeds)
+
+**Wniosek:** GRAPH_DECAY=0.5 dla obu typów krawędzi jest punktem równowagi. Brak dalszych knobów wartych kręcenia; następny skok Recall wymagałby innego sygnału (np. lepsze embeddingi).
+
+**Status:** ✅ Zakończone. `CONCEPT_DECAY=0.5` udokumentowany w kodzie.
+
+---
+
 ## 2026-08-01 — Cognee-lite: graf konceptów zbudowany i zintegrowany — Recall 0.438→0.500
 
 **Co zrobiono:**

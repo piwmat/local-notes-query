@@ -149,6 +149,7 @@ def NoteTxt(p):
 # --- RRF + graph expansion ---
 RRF_K = 60
 GRAPH_DECAY = 0.5
+CONCEPT_DECAY = 0.5  # tuned: 0.3->0.469, 0.5->0.500 (best), 0.7->0.406
 SEED_VEC = 5
 SEED_KW = 3
 
@@ -170,7 +171,7 @@ def candidates(q):
             nb_score = s * GRAPH_DECAY
             pool[nb] = max(pool.get(nb, 0.0), nb_score)
         for nb in CONCEPT_NEIGHBORS.get(seed, ()):
-            nb_score = s * GRAPH_DECAY
+            nb_score = s * CONCEPT_DECAY
             pool[nb] = max(pool.get(nb, 0.0), nb_score)
     return [(p, v) for p, v in sorted(pool.items(), key=lambda x: -x[1])]
 
