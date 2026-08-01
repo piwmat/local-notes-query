@@ -24,6 +24,26 @@
 
 ---
 
+## 2026-08-01 — A/B test: cognee vs własny pipeline — WYNIK: cognee odrzucone
+
+**Co zrobiono:**
+- Test integracji cognee 1.4.0 (zainstalowane w anaconda) z endpointem 9Router (localhost:20128).
+- Ścieżka LLM działa (litellm → `openai/gc/gemini-2.5-flash-lite` → `OK: 4`).
+
+**Błędy napotkane (6 blokerów):**
+1. `set_llm_provider("litellm")` — nie ma w enum LLMProvider 1.4.0 (openai/ollama/anthropic/custom/gemini/mistral/azure/bedrock/llama_cpp) → `openai`
+2. `test_llm_connection` timeout 30s → `COGNEE_SKIP_CONNECTION_TEST=true`
+3. Nazwa datasetu ze ścieżki: "best you" (spacja) → ValueError → kopia notatek do `%TEMP%\best-you-notes`
+4. Model `ollama/minimax-m3` → litellm routuje po prefiksie na protokół ollama → 404 HTML 9Router
+5. Brak credentials per provider → model z `gc/` działa
+6. **Ściana:** instructor (pydantic→JSON schema z `discriminator`) → gemini-cli: `400 INVALID_ARGUMENT Unknown name "discriminator"` → InstructorRetryException pętla retry. Wymaga custom adaptera — koniec testu.
+
+**Wniosek:** cognee nie integruje się z 9Router bez chirurgii. Koszt > wartość. **Cognee-lite (własna ekstrakcja triples, plain chat completion, bez instructor/graph DB) pozostaje rekomendacją.**
+
+**Status:** ✅ Zakończone (negatywny wynik = wynik). `.cognee_*` storage w `~` — partial data, nieużywane.
+
+---
+
 ## 2026-08-01 — Ewaluacja naprawiona + decyzja o grafie konceptów
 
 **Co zrobiono:**

@@ -21,12 +21,13 @@
 ## Co jest następne (kolejka)
 
 1. **Push do GitHub** (repo `piwmat/local-notes-query`) — zrobione.
-2. **Ewaluacja retrievalu** — naprawiona (retrieve cmd w local-kb.py). Baseline: Recall@10=0.406, MRR=0.500. Następny cel: >0.6.
+2. **Ewaluacja retrievalu** — naprawiona (retrieve cmd + fix benchmarku cudzysłowów). Baseline: Recall@10=0.438, MRR=0.521. Następny cel: >0.6 (graf konceptów).
 3. **`sync.bat` pełny przebieg** — przetestowany po naprawie `for /f`. Indeksowanie działa.
 
 ## Decyzje
 
-- **Graf konceptów (rzeczowniki + krawędzie-czasowniki, styl Cognee): ODROCZONY.** Trigger: korpus >200 notatek LUB Recall@10 <0.6 po naprawach. Powód: koszt ekstrakcji LLM rośnie liniowo z liczbą notatek; embeddingi pokrywają semantykę przy małym korpusie. Upgrade path: LLM-extract triples offline → JSON → krawędzie do NEIGHBORS.
+- **Graf konceptów (rzeczowniki + krawędzie-czasowniki): BUDUJEMY (Cognee-lite), trigger spełniony.** Recall@10=0.438 <0.6. Sposób: własna ekstrakcja triples (1× LLM batch, plain chat completion) → `output/concept-graph.json` → krawędzie do NEIGHBORS. Bez instructor/graph DB.
+- **Cognee (biblioteka): ODRZUCONE po A/B** (6 blokerów integracji z 9Router, m.in. JSON schema `discriminator` → 400). Szczegóły w logbook.md.
 
 ## Otwarte pytania
 
