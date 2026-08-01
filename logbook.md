@@ -1,5 +1,17 @@
 
 ---
+## 2026-08-01 — Przegląd workspace: push OK, notes/AGENTS.md odświeżony, sanity pipeline
+
+**Co zrobiono:**
+- Weryfikacja pusha: `origin` = `github.com/piwmat/local-notes-query`, `master` = `1cd4cee`, śledzi `origin/master`, brak rozjazdu → push potwierdzony (zgodnie ze STATUS.md).
+- `notes/AGENTS.md` zaktualizowany: martwe ścieżki (`best-you-kb.py`, `.ua/`, `programs/tree-index.md`, `embeddings.json`) → aktualne (`local-kb.py`, `output/`, graf konceptów, eval, sync).
+- Sanity pipeline: `update_tree.py` OK → `build_graph.py` (16 nodes/11 edges) → `enrich.py` (layers=4, tour=10) → `test_kb.py` OK (36 notes) → `eval_retrieval.py` = **Recall@10 0.500, MRR 0.517** (baseline potwierdzony, brak zmian).
+
+**Błędy napotkane:**
+- Domyślny `python` (hermes-agent venv) nie ma `numpy` → `python tools\test_kb.py` → `ModuleNotFoundError`. Skrypty zależne od numpy (`local-kb.py`, `test_kb.py`, `eval_retrieval.py`) uruchamiać przez `C:\Users\Mateusz\AppData\Local\anaconda3\python.exe` (numpy 2.3.5, onnxruntime, tokenizers). `local-kb.bat` już tak robi; `sync.bat` nie potrzebuje numpy (narzędzia grafu = stdlib).
+- `tools/build_concept_graph.py` ma BOM (UTF-8-sig) na początku — Python toleruje; pomijalne.
+
+**Status:** ✅ Zakończone. Graf i ewaluacja bez zmian; stan zgodny ze STATUS.md.
 
 ## 2026-08-01 — Naprawa i Ewaluacja Pipeline'u
 
