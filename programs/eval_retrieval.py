@@ -1,4 +1,4 @@
-"""queries.json eval. Runs best-you-kb.py retrieve() against the benchmark
+"""queries.json eval. Runs local-kb.py retrieve() against the benchmark
 fixture and reports Recall@K + MRR. No LLM tokens — pure retrieval quality.
 
 Usage:
@@ -8,12 +8,13 @@ import json, os, sys, argparse, subprocess, re, pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 QUERIES = ROOT / "programs" / "queries.json"
-KB = ROOT / "programs" / "best-you-kb.py"
+KB = ROOT / "programs" / "local-kb.py"
 
 def run_retrieve(q: str, k: int) -> list[str]:
-    """Invoke best-you-kb.py retrieve command, parse top-K filenames."""
+    """Invoke local-kb.py retrieve command, parse top-K filenames."""
+    py_exe = r"C:\Users\Mateusz\AppData\Local\anaconda3\python.exe"
     out = subprocess.run(
-        [sys.executable, str(KB), "retrieve", q, "--topk", str(k)],
+        [py_exe, str(KB), "retrieve", q, "--topk", str(k)],
         capture_output=True, text=True, cwd=ROOT,
     )
     if out.returncode != 0:
