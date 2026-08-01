@@ -36,7 +36,7 @@ nodes.append(file_node('programs/build-embeddings','build-embeddings','Stream-pa
 nodes.append(file_node('programs/query','query','REPL RAG. Pipeline: (1) ONNX embed query -> cosine top10 vs embeddings.json, (2) keyword_search via MCP top8, (3) MMR select (lam=0.75, dupe 0.92, 6k cap), (4) build context + ancestor chain, (5) OpenAI-compatible LLM synteza.',['pipeline','rag','repl']))
 nodes.append(file_node('programs/update_tree.py','update_tree.py','Regeneruje tree-index.md z wikilinkow w vault.',['pipeline','index']))
 nodes.append(file_node('programs/kb-cognee','kb-cognee','Experimentalny backend Cognee (nieaktywny). Dane w .cognee_* (LanceDB + Kuzu).',['pipeline','experimental']))
-nodes.append(file_node('.ua/knowledge-graph.json','knowledge-graph.json','UA knowledge graph: dokumentuje ARCHEKTURE pipeline (ten plik).',['index','ua']))
+nodes.append(file_node('output/knowledge-graph.json','knowledge-graph.json','UA knowledge graph: dokumentuje ARCHEKTURE pipeline (ten plik).',['index','ua']))
 
 # -- Launchers / wrappers --
 nodes.append(file_node('programs/query.bat','query.bat','Win launcher: uruchamia programs/query.',['launcher']))
