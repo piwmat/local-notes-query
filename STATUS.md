@@ -20,12 +20,15 @@
 
 ## Co jest następne (kolejka)
 
-1. **Push do GitHub** (repo `piwmat/local-kb`?) — czeka na utworzenie repo przez użytkownika
-2. **Decyzja: specjaliści** (`_system/security`, `_system/quality`) — wstrzymane (YAGNI, projekt mały)
-3. **Ewaluacja retrievalu** — `programs/eval_retrieval.py` + `queries.json` (benchmark jakości)
-4. **`sync.bat` pełny przebieg** — przetestowany po naprawie `for /f`
+1. **Push do GitHub** (repo `piwmat/local-notes-query`) — zrobione.
+2. **Ewaluacja retrievalu** — naprawiona (retrieve cmd w local-kb.py). Baseline: Recall@10=0.406, MRR=0.500. Następny cel: >0.6.
+3. **`sync.bat` pełny przebieg** — przetestowany po naprawie `for /f`. Indeksowanie działa.
+
+## Decyzje
+
+- **Graf konceptów (rzeczowniki + krawędzie-czasowniki, styl Cognee): ODROCZONY.** Trigger: korpus >200 notatek LUB Recall@10 <0.6 po naprawach. Powód: koszt ekstrakcji LLM rośnie liniowo z liczbą notatek; embeddingi pokrywają semantykę przy małym korpusie. Upgrade path: LLM-extract triples offline → JSON → krawędzie do NEIGHBORS.
 
 ## Otwarte pytania
 
 - Czy `queries.json` ma zostać w repo? (używany przez eval_retrieval.py → tak)
-- Czy cognee_pipeline.py ma pozostać? (eksperymentalny, nieaktywny)
+

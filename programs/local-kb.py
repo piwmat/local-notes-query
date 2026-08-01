@@ -190,6 +190,13 @@ def ask(q):
 
 # â”€â”€ REPL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "retrieve":
+        q = sys.argv[2]
+        k = int(sys.argv[4]) if len(sys.argv) > 4 and sys.argv[3] == "--topk" else 10
+        for i, (p, _, _) in enumerate(mmr(candidates(q))[:k], 1):
+            print(f"{i}. {p}")
+        sys.exit(0)
+
     print(f"loaded {len(NOTES)} notes from '{VAULT.name}'; vocab={len(IDF)}", flush=True)
     while True:
         try: q = input("\nlocal-kb> ").strip()
