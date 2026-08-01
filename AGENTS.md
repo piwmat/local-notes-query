@@ -7,6 +7,9 @@ indeksowania i odpytywania. Struktura folderów JEST architekturą (ICM, arXiv:2
 
 | Zadanie | Idź do |
 |---|---|
+| Stan workspace / co dalej | `STATUS.md` |
+| Historia działań i błędów | `logbook.md` |
+| Tożsamość i postawa agenta | `IDENTITY.md` |
 | Odpytywanie notatek (REPL) | `programs/local-kb.py` (uruchom przez `programs/local-kb.bat`) |
 | Zbuduj tree-index | `programs/update_tree.py` → zapisuje `output/tree-index.md` |
 | Zbuduj graf wiedzy | `tools/build_graph.py` → `output/knowledge-graph.json` |
@@ -29,3 +32,5 @@ indeksowania i odpytywania. Struktura folderów JEST architekturą (ICM, arXiv:2
 - Czytaj `PROJECT_PRINCIPLES.md` i `IDENTITY.md` przed zmianami.
 - Każda zmiana struktury → najpierw propozycja + akceptacja (bramka ludzka).
 - Weryfikuj zmiany (uruchom skrypt) przed zakończeniem.
+- **Stop i raportuj:** jeśli coś zawiedzie — przerwij i raportuj. Cichy retry zakazany.
+- Po każdym zadaniu: wpis do `logbook.md` + aktualizacja `STATUS.md`.
