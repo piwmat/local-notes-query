@@ -3,7 +3,7 @@ import re
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent  # "best you" vault dir
-INDEX_FILE = BASE / "programs" / "tree-index.md"
+INDEX_FILE = BASE / "output" / "tree-index.md"
 ROOT_DIR = BASE
 # Obsidian alias syntax: [[target]] or [[target|alias]]. Capture target only.
 WIKILINK_RE = re.compile(r"\[\[([^\]|]+)(?:\|[^\]]+)?\]\]")

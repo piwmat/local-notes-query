@@ -1,2 +1,5 @@
 ﻿notes/
 programs/__pycache__/
+output/
+_archive/
+*.log

@@ -1,5 +1,5 @@
 ﻿import json, datetime, pathlib
-path = pathlib.Path(r'C:\Users\Mateusz\Desktop\Notes\best you\.ua\knowledge-graph.json')
+path = pathlib.Path(r'C:\Users\Mateusz\Desktop\Notes\best you\output\knowledge-graph.json')
 g = json.loads(path.read_text(encoding='utf-8'))
 n = {x['id']: x for x in g['nodes']}
 

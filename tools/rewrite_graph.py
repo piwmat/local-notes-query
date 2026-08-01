@@ -1,6 +1,6 @@
 ﻿import json, datetime, pathlib
 root = pathlib.Path(r'C:\Users\Mateusz\Desktop\Notes\best you')
-path = root/'.ua/knowledge-graph.json'
+path = root/'output/knowledge-graph.json'
 g = json.loads(path.read_text(encoding='utf-8'))
 
 def fid(p): return f'file:{p}'

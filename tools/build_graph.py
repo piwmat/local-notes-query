@@ -95,6 +95,6 @@ graph = {
     'nodes': nodes,
     'edges': edges,
 }
-out = root/'.ua/knowledge-graph.json'
+out = root/'output/knowledge-graph.json'
 out.write_text(json.dumps(graph, ensure_ascii=False, indent=2), encoding='utf-8')
 print(f'nodes={len(nodes)} edges={len(edges)} -> {out}')

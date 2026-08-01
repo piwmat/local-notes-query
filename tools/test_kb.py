@@ -1,5 +1,5 @@
 ﻿import importlib.util
-spec = importlib.util.spec_from_file_location("kb", r"C:\Users\Mateusz\Desktop\Notes\best you\programs\best-you-kb.py")
+spec = importlib.util.spec_from_file_location("kb", r"C:\Users\Mateusz\Desktop\Notes\best you\programs\local-kb.py")
 m = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(m)
 print("NOTES:", len(m.NOTES), "| vocab:", len(m.IDF))
