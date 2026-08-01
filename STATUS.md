@@ -31,6 +31,15 @@
 - **Graf konceptów (Cognee-lite): ZBUDOWANY.** `tools/build_concept_graph.py` → `output/concept-graph.json` (416 triples) → `CONCEPT_NEIGHBORS` w local-kb.py. Recall@10 0.438→0.500. Do tuningu: decay krawędzi konceptowych (dilucja Q1/Q2/Q5).
 - **Cognee (biblioteka): ODRZUCONE po A/B** (6 blokerów integracji z 9Router, m.in. JSON schema `discriminator` → 400). Szczegóły w logbook.md.
 
+## Pętla weryfikacji (Dead Man's Switch)
+
+Stan licznika nieudanych prób dla aktywnej pętli tuningowej (patrz `tools/verification-skill.md`,
+`programs/loop_tune.py`). Limit: **3 kolejne nieudane próby** → twardy stop, raport do logbook.md.
+
+- pętla_licznik: 0/3
+- pętla_cel: brak aktywnej pętli
+- pętla_ostatni_wynik: —
+
 ## Otwarte pytania
 
 - Czy `queries.json` ma zostać w repo? (używany przez eval_retrieval.py → tak)

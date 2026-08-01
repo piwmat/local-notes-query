@@ -99,3 +99,21 @@
 - Początkowe porównanie wyników mylące — poprzedni pomiar 0.406 był z `lam=1.0, budget=99999` (bypass MMR), nowy z realnym pipeline'em. Dopiero A/B (oba z realnym MMR) dał uczciwe porównanie.
 
 **Status:** ✅ Zakończone. Harness działa, baseline ustalony.
+
+---
+
+## 2026-08-01 — Wdrożenie pętli weryfikacji dla pojedynczego agenta
+
+**Co zrobiono:**
+- Na podstawie zewnętrznego materiału o wzorcach pętli agentowej (single-agent loop) zrobiono gap-analysis względem istniejącego setupu (AGENTS.md/IDENTITY.md/STATUS.md/logbook.md już pokrywały większość wzorca).
+- Dodał `tools/verification-skill.md` — wyodrębniony protokół pętli: napisz→uruchom→zweryfikuj→porównaj→(popraw/cofnij), z Dead Man's Switch (limit 3 nieudane próby z rzędu).
+- Dodał `programs/loop_tune.py` — deterministyczny skrypt-pętla dla tuningu `CONCEPT_DECAY`/`GRAPH_DECAY` w `local-kb.py` względem `eval_retrieval.py` (sedzia = Recall@10/MRR). Auto-rollback do najlepszego stanu, nie commituje do gita (bramka ludzka).
+- Rozszerzono `STATUS.md` o sekcję "Pętla weryfikacji (Dead Man's Switch)" z licznikiem stanu pętli.
+- Rozszerzono `AGENTS.md` o wpis routingu do `loop_tune.py` oraz 2 nowe zasady agenta: stosowanie pętli weryfikacji i cykliczna analiza `logbook.md` pod kątem powtarzających się błędów.
+- Celowo NIE wdrożono: dosłownej komendy `/loop` (to funkcja Claude Code, nie coś do zapisania w plikach projektu) ani numerowanych folderów etapowych (koliduje z architekturą Factory/Product, która już działa).
+
+**Błędy napotkane:**
+- Próba edycji plików na dysku Windows przez ogólny `str_replace`/`create_file` (działa tylko na kontenerze Claude) — zamiast tego użyto narzędzi `filesystem:edit_file`/`filesystem:write_file` z MCP.
+- **Doprecyzowanie po weryfikacji przez użytkownika:** `tools/verification-skill.md` faktycznie NIE trafił na dysk — `create_file` (narzędzie kontenera) przyjął ścieżkę Windows (`C:\Users\...`) i utworzył ją jako pojedynczy plik z dosłownymi backslashami w nazwie, w root kontenera Linux (`/C:\Users\Mateusz\...`), zamiast zgłosić błąd. Naprawiono: treść odzyskana z kontenera i zapisana przez `filesystem:write_file` (MCP) pod właściwą ścieżką. **Lekcja: `create_file`/`str_replace` (narzędzia kontenera) NIGDY nie używać dla ścieżek zaczynających się od `C:\` — zawsze `filesystem:write_file`/`filesystem:edit_file` (MCP) dla plików na dysku Windows. Brak błędu zwrotnego przy tej pomyłce oznacza, że każdy zapis na dysk trzeba zweryfikować `filesystem:list_directory` po fakcie, nie ufać samemu komunikatowi "successfully created".**
+
+**Status:** ✅ Zakończone. `loop_tune.py` nie był jeszcze uruchomiony na realnych danych — następny krok to test na `CONCEPT_DECAY` względem celu Recall@10 > 0.6.

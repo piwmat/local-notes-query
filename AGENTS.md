@@ -17,6 +17,7 @@ indeksowania i odpytywania. Struktura folderów JEST architekturą (ICM, arXiv:2
 | Przepisz graf | `tools/rewrite_graph.py` |
 | Pełny sync (tree+graf+commit) | `programs/sync.bat` |
 | Ewaluacja retrievalu | `programs/eval_retrieval.py` (+ `programs/queries.json`) |
+| Pętla tuningu parametrów retrievalu | `programs/loop_tune.py` (+ `tools/verification-skill.md`) |
 | Eksperyment: Cognee | `programs/cognee_pipeline.py` |
 
 ## Konwencje
@@ -34,3 +35,5 @@ indeksowania i odpytywania. Struktura folderów JEST architekturą (ICM, arXiv:2
 - Weryfikuj zmiany (uruchom skrypt) przed zakończeniem.
 - **Stop i raportuj:** jeśli coś zawiedzie — przerwij i raportuj. Cichy retry zakazany.
 - Po każdym zadaniu: wpis do `logbook.md` + aktualizacja `STATUS.md`.
+- **Pętla weryfikacji:** dla zadań z jasnym celem liczbowym i deterministycznym sędzią (np. tuning parametrów retrievalu) stosuj protokół z `tools/verification-skill.md`. Dead Man's Switch: 3 nieudane próby z rzędu → twardy stop, nie zgaduj dalej.
+- **Cykliczna analiza logbooka:** raz na kilka sesji (lub gdy pojawi się nowy, nieoczywisty błąd) przeczytaj cały `logbook.md` i sprawdź, czy błąd nie jest powtórką wcześniejszego wzorca (np. ścieżki anaconda/python, konflikty endpointu LLM). Jeśli tak — zaktualizuj regułę źródłową (`AGENTS.md`/`IDENTITY.md`), żeby ten sam problem nie wracał.
